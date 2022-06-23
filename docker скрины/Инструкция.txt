@@ -1,0 +1,5 @@
+https://hub.docker.com/repository/docker/wadkos/kostiuchek
+
+docker pull wadkos/kostiuchek
+docker build -t kostiuchek .
+docker run kostiuchek 

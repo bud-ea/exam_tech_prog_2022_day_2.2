@@ -3,10 +3,10 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
-
 #include <QtNetwork>
 #include <QByteArray>
 #include <QDebug>
+#include <QString>
 
 class MyTcpServer : public QObject
 {
@@ -14,6 +14,7 @@ class MyTcpServer : public QObject
 public:
     explicit MyTcpServer(QObject *parent = nullptr);
     ~MyTcpServer();
+
 public slots:
     void slotNewConnection();
     void slotClientDisconnected();
@@ -21,7 +22,7 @@ public slots:
     void slotServerRead();
 private:
     QTcpServer * mTcpServer;
-    QTcpSocket * mTcpSocket;
+    std::list<QTcpSocket*> mTcpSocket;
     //int server_status;
 };
 #endif // MYTCPSERVER_H

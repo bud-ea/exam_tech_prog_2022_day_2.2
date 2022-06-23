@@ -1,4 +1,5 @@
 #include "mytcpserver.h"
+#include "sypher.h"
 #include <QDebug>
 #include <QCoreApplication>
 
@@ -22,21 +23,50 @@ MyTcpServer::MyTcpServer(QObject *parent) : QObject(parent){
 
 void MyTcpServer::slotNewConnection(){
  //   if(server_status==1){
-        mTcpSocket = mTcpServer->nextPendingConnection();
-        mTcpSocket->write("Hello, World!!! I am echo server!\r\n");
-        connect(mTcpSocket, &QTcpSocket::readyRead,this,&MyTcpServer::slotServerRead);
-        connect(mTcpSocket,&QTcpSocket::disconnected,this,&MyTcpServer::slotClientDisconnected);
+        QTcpSocket *tempSocket;
+        tempSocket = mTcpServer->nextPendingConnection();
+        mTcpSocket.push_back(tempSocket);
+        tempSocket->write("Hello, World!!! I am echo server!\r\n");
+        connect(tempSocket, &QTcpSocket::readyRead,this,&MyTcpServer::slotServerRead);
+        connect(tempSocket,&QTcpSocket::disconnected,this,&MyTcpServer::slotClientDisconnected);
    // }
 }
 
 void MyTcpServer::slotServerRead(){
-    while(mTcpSocket->bytesAvailable()>0)
+    QTcpSocket* tempSock=(QTcpSocket*)sender();
+    QString res="";
+    QByteArray arr;
+
+    while(tempSock->bytesAvailable()>0)
     {
-        QByteArray array =mTcpSocket->readAll();
-        mTcpSocket->write(array);
+        QByteArray array =tempSock->readAll();
+        //res=tempSock->readAll();
+        res.append(array);
+        //res+=array;
+        //arr.append(array);
+        //mTcpSocket->write(array);
     }
+    QString h=task(res);
+    QByteArray g=h.toUtf8();
+    //QByteArray array=task(res);
+    //re.append(task(res));
+    //QString d=task(res);
+    //qDebug()<<d;
+    //tempSock->write(re);
+    //qDebug()<<arr;
+    qDebug()<<h;
+    for (auto it=mTcpSocket.begin();it!=mTcpSocket.end();it++)
+    {
+        tempSock=*it;
+        tempSock->write(g);
+    }
+    //tempSock->write(g);
+    //tempSock->write(arr);
 }
 
 void MyTcpServer::slotClientDisconnected(){
-    mTcpSocket->close();
+    QTcpSocket* tempSock=(QTcpSocket*)sender();
+    mTcpSocket.remove(tempSock);
+    tempSock->close();
 }
+

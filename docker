@@ -1,0 +1,18 @@
+FROM ubuntu:18.04
+ENV TZ=Europe/Moscow
+LABEL maintainer="Dyakonov Pavel"
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt-get update
+RUN apt-get -y install qt5-default
+RUN apt-get -y install qtbase5-dev
+RUN apt-get install qt5-qmake
+RUN apt-get -y install build-essential
+
+
+COPY . /root/Dyakonov_211_351/ProgToStart
+WORKDIR /root/Dyakonov_211_351/ProgToStart
+RUN qmake echoServer.pro
+RUN make
+
+ENTRYPOINT ["./echoServer"]

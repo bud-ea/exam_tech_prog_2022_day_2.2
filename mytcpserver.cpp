@@ -1,42 +1,53 @@
 #include "mytcpserver.h"
+#include "message.h"
 #include <QDebug>
 #include <QCoreApplication>
 
 MyTcpServer::~MyTcpServer()
 {
-    mTcpServer->close();
+    // mainTcpServer->close();
+    mainTcpServer->close();
     //server_status=0;
 }
 MyTcpServer::MyTcpServer(QObject *parent) : QObject(parent){
-    mTcpServer = new QTcpServer(this);
-    connect(mTcpServer, &QTcpServer::newConnection,
-            this, &MyTcpServer::slotNewConnection);
+    mainTcpServer = new QTcpServer(this);
+    connect(mainTcpServer, &QTcpServer::newConnection, this, &MyTcpServer::slotNewConnection);
 
-    if(!mTcpServer->listen(QHostAddress::Any, 33333)){
-        qDebug() << "server is not started";
-    } else {
-        //server_status=1;
-        qDebug() << "server is started";
-    }
+    if (mainTcpServer->listen(QHostAddress::Any, 33333)) {qDebug() << "Server started on port 33333";}
+    else {qDebug() << "Server not started, check for errors";}
+    
 }
 
 void MyTcpServer::slotNewConnection(){
- //   if(server_status==1){
-        mTcpSocket = mTcpServer->nextPendingConnection();
-        mTcpSocket->write("Hello, World!!! I am echo server!\r\n");
-        connect(mTcpSocket, &QTcpSocket::readyRead,this,&MyTcpServer::slotServerRead);
-        connect(mTcpSocket,&QTcpSocket::disconnected,this,&MyTcpServer::slotClientDisconnected);
-   // }
+//    if(server_status==1){
+    QTcpSocket* newSocket;
+    newSocket = mainTcpServer->nextPendingConnection();
+    connect(newSocket, &QTcpSocket::readyRead,this,&MyTcpServer::slotServerRead);
+    connect(newSocket, &QTcpSocket::disconnected,this,&MyTcpServer::slotClientDisconnected);
+    mTcpSocket.push_back(newSocket);
+    qDebug() << "Client connected";
+//    }
 }
 
 void MyTcpServer::slotServerRead(){
-    while(mTcpSocket->bytesAvailable()>0)
+    QTcpSocket *senderSocket = (QTcpSocket*)sender();
+    QString res="";
+    while(senderSocket->bytesAvailable()>0)
     {
-        QByteArray array =mTcpSocket->readAll();
-        mTcpSocket->write(array);
+        QByteArray array = senderSocket->readAll();
+        res.append(array);
+    }
+
+    Message encryptedMessage(&res);
+    encryptedMessage.encryptMessage();
+    // QByteArray msg = "123";
+
+    for (auto el : mTcpSocket) {
+        el->write(encryptedMessage.getMessage());
     }
 }
 
 void MyTcpServer::slotClientDisconnected(){
-    mTcpSocket->close();
+    QTcpSocket *senderSocket = (QTcpSocket*)sender();
+    senderSocket->close();
 }

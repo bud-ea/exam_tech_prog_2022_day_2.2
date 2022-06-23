@@ -7,6 +7,8 @@
 #include <QtNetwork>
 #include <QByteArray>
 #include <QDebug>
+#include <QList>
+#include <QThread>
 
 class MyTcpServer : public QObject
 {
@@ -19,9 +21,11 @@ public slots:
     void slotClientDisconnected();
 
     void slotServerRead();
+    // void sendToAll();
+    // void incomingConnection(qintptr socketDescriptor);
 private:
-    QTcpServer * mTcpServer;
-    QTcpSocket * mTcpSocket;
+    QTcpServer * mainTcpServer;
+    QList<QTcpSocket*> mTcpSocket;
     //int server_status;
 };
 #endif // MYTCPSERVER_H

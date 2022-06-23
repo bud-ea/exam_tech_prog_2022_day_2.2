@@ -1,6 +1,0 @@
-https://hub.docker.com/r/chase666/exam
-
-docker pull chase666/exam
-docker build -t exam .
-docker run exam
-

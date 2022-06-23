@@ -1,0 +1,3 @@
+https://hub.docker.com/repository/docker/bubenokgeorgy/exam
+docker build . -t name
+docker run name

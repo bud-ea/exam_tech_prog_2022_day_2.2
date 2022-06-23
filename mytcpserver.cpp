@@ -1,7 +1,7 @@
 #include "mytcpserver.h"
 #include <QDebug>
 #include <QCoreApplication>
-
+#include "encryption.h"
 MyTcpServer::~MyTcpServer()
 {
     mTcpServer->close();
@@ -21,22 +21,33 @@ MyTcpServer::MyTcpServer(QObject *parent) : QObject(parent){
 }
 
 void MyTcpServer::slotNewConnection(){
- //   if(server_status==1){
-        mTcpSocket = mTcpServer->nextPendingConnection();
-        mTcpSocket->write("Hello, World!!! I am echo server!\r\n");
-        connect(mTcpSocket, &QTcpSocket::readyRead,this,&MyTcpServer::slotServerRead);
-        connect(mTcpSocket,&QTcpSocket::disconnected,this,&MyTcpServer::slotClientDisconnected);
-   // }
+        QTcpSocket *tempSocket;
+        tempSocket = mTcpServer->nextPendingConnection();
+        tempSocket->write("Hello, World!!! I am echo server!\r\n");
+        mTcpSocket.push_back(tempSocket);
+        connect(tempSocket, &QTcpSocket::readyRead,this,&MyTcpServer::slotServerRead);
+        connect(tempSocket,&QTcpSocket::disconnected,this,&MyTcpServer::slotClientDisconnected);
 }
 
 void MyTcpServer::slotServerRead(){
-    while(mTcpSocket->bytesAvailable()>0)
+    QTcpSocket *tempSock = (QTcpSocket*)sender();
+    QString res="";
+    while(tempSock->bytesAvailable()>0)
     {
-        QByteArray array =mTcpSocket->readAll();
-        mTcpSocket->write(array);
+        QByteArray array =tempSock->readAll();
+        res.append(array);
+    }
+
+    QByteArray array = encrypt(res);
+    tempSocketList=mTcpSocket;
+    for (int i = 0; i<mTcpSocket.size(); i++){
+        tempSocketList.front()->write(array);
+        tempSocketList.pop_front();
     }
 }
 
 void MyTcpServer::slotClientDisconnected(){
-    mTcpSocket->close();
+    QTcpSocket *tempSock = (QTcpSocket*)sender();
+    mTcpSocket.remove(tempSock);
+    tempSock->close();
 }

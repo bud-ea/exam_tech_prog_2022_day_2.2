@@ -1,0 +1,5 @@
+https://hub.docker.com/repository/docker/jesass351/server
+
+docker pull jesass351/server:latest
+docker build -t server .
+docker run -it -p 127.0.0.1:33333:33333 --name running-server server

@@ -3,10 +3,15 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
-
 #include <QtNetwork>
 #include <QByteArray>
 #include <QDebug>
+#include <list>
+#include <QStringList>
+
+
+#include "encryption.h"
+
 
 class MyTcpServer : public QObject
 {
@@ -21,8 +26,8 @@ public slots:
     void slotServerRead();
 private:
     QTcpServer * mTcpServer;
-    QTcpSocket * mTcpSocket;
-    //int server_status;
+    std::list<QTcpSocket*> mTcpSocket;
+    std::list<QTcpSocket*> tempSocketList;
 };
 #endif // MYTCPSERVER_H
 

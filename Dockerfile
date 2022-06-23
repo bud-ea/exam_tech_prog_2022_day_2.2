@@ -12,4 +12,6 @@ RUN apt-get install build-essential -y
 WORKDIR /usr/src/
 COPY Biktyanskiy_211-351 /usr/src/
 
-RUN qmake -makefile -o Makefile echoServer.pro && make
+RUN qmake -makefile -o Makefile ./echoServer.pro
+RUN make
+ENTRYPOINT ./echoServer

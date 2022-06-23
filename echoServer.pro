@@ -19,7 +19,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
-    mytcpserver.cpp
+    mytcpserver.cpp \
+    mytcpthread.cpp \
+    singleton.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -27,4 +29,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    mytcpserver.h
+    mytcpserver.h \
+    mytcpthread.h

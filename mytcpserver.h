@@ -1,34 +1,26 @@
+
 #ifndef MYTCPSERVER_H
 #define MYTCPSERVER_H
+
+#include "mytcpthread.h"
 #include <QObject>
 #include <QTcpServer>
+#include <QtNetwork>
+#include <QDebug>
 #include <QTcpSocket>
 
-#include <QtNetwork>
-#include <QByteArray>
-#include <QDebug>
 
-class MyTcpServer : public QObject
+class MyTcpServer : public QTcpServer
 {
     Q_OBJECT
 public:
+
     explicit MyTcpServer(QObject *parent = nullptr);
     ~MyTcpServer();
-public slots:
-    void slotNewConnection();
-    void slotClientDisconnected();
+protected:
 
-    void slotServerRead();
+    void incomingConnection(qintptr socketDescriptor);
 private:
-    QTcpServer * mTcpServer;
-    QTcpSocket * mTcpSocket;
-    //int server_status;
 };
-#endif // MYTCPSERVER_H
 
-
-
-
-
-
-
+#endif

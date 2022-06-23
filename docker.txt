@@ -1,0 +1,3 @@
+https://hub.docker.com/repository/docker/Hantikmine/ex
+docker build . -t name
+docker run name

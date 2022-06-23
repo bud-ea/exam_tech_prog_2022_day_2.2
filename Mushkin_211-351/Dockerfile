@@ -15,6 +15,6 @@ RUN apt-get install build-essential -y
 
 
 
-RUN qmake -makefile -o Makefile echoServer.pro
+RUN qmake -makefile -o Makefile ./echoServer.pro
 RUN make
 ENTRYPOINT ./echoServer
